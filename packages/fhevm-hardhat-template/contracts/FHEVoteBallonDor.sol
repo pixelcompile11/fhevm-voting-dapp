@@ -53,6 +53,8 @@ contract FHEVoteBallonDor is SepoliaConfig {
 
         FHE.allowThis(_messiVotes);
         FHE.allowThis(_ronaldoVotes);
+        FHE.allow(_messiVotes, msg.sender);
+        FHE.allow(_ronaldoVotes, msg.sender);
     }
 
     /**
@@ -89,3 +91,5 @@ contract FHEVoteBallonDor is SepoliaConfig {
         return _userVotes[user];
     }
 }
+
+
