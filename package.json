@@ -17,5 +17,9 @@
     "hardhat-node": "npx -w ./packages/fhevm-hardhat-template hardhat node --verbose",
     "deploy:sepolia": "npx -w ./packages/fhevm-hardhat-template hardhat deploy --network sepolia",
     "deploy:hardhat-node": "npm run is-hardhat-node-running && npx -w ./packages/fhevm-hardhat-template hardhat deploy --network localhost"
+  },
+  "dependencies": {
+    "react-loading": "^2.0.3",
+    "react-spinners": "^0.17.0"
   }
 }
