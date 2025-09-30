@@ -192,7 +192,7 @@ export default function VoteBallonDor() {
       }));
 
   return (
-    <div className="w-full flex flex-col items-center gap-8 p-6">
+    <div className="h-[calc(100vh-120px)] w-full flex flex-col items-center justify-center gap-8 p-6">
       {(loading || fhevmStatus !== 'ready') && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
           <BounceLoader

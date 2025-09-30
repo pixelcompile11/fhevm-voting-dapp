@@ -1,50 +1,51 @@
-# FHEVM React Template
+# FHEVoteBallonDor
 
-The FHEVM React Template is an ultra-minimal React project for building and running an FHEVM-enabled dApp.
-It works alongside the [fhevm-hardhat-template](https://github.com/zama-ai/fhevm-hardhat-template)
-and provides a simple development frontend for interacting with the `FHECounter.sol` contract.
+This repository is a comprehensive React + Next.js frontend for interacting with the `FHEVoteBallonDor.sol` smart contract deployed on Sepolia networks using FHEVM.
 
-This template also illustrates how to run your FHEVM-dApp on both Sepolia as well as a local Hardhat Node (much faster).
+The contract allows users to securely vote for either Messi or Ronaldo in a fully homomorphic encrypted manner. Votes are encrypted on-chain, ensuring privacy and integrity, while still allowing authorized decryption for both individual users and the contract itself. This guarantees that vote counts remain confidential until decrypted by permitted parties.
 
 ## Features
 
-- **@zama-fhe/relayer-sdk**: Fully Homomorphic Encryption for Ethereum Virtual Machine
-- **React**: Modern UI framework for building interactive interfaces
-- **Next.js**: Next-generation frontend build tool
-- **Tailwind**: Utility-first CSS framework for rapid UI development
+* **Fully Homomorphic Encryption**: All votes are encrypted using FHE, keeping individual choices private.
+* **User and Contract Decryption**: Both users and the contract can decrypt votes securely when needed.
+* **Vote Updates**: Users can change their vote at any time, with the contract adjusting total counts automatically.
+* **Real-Time Encrypted Vote Totals**: Frontend fetches encrypted totals and decrypts them for display.
+* **React + Next.js**: Modern, responsive frontend architecture.
+* **Tailwind CSS**: Utility-first CSS framework for rapid styling and responsive design.
+* **Charts and Visualization**: Displays voting results in a clean, interactive PieChart.
+
+## Smart Contract Overview
+
+The `FHEVoteBallonDor.sol` contract is designed for secure, private voting using FHE:
+
+* `vote(externalEuint32 choiceEncrypted, bytes calldata proof)`: Users cast or update votes. The input is encrypted and accompanied by a zero-knowledge proof.
+* `_messiVotes` and `_ronaldoVotes`: Encrypted counters of total votes.
+* `_userVotes`: Stores individual encrypted votes by user address.
+* Decryption permissions are managed via `FHE.allow` and `FHE.allowThis` functions to allow both the user and contract to decrypt relevant values.
+* `getMessiVotes()`, `getRonaldoVotes()`: Retrieve encrypted total votes.
+* `getMyVote()`, `getUserVote(address)`: Retrieve the encrypted vote of the caller or a specific user.
+
+This design ensures that voting is transparent and verifiable while preserving voter privacy.
 
 ## Requirements
 
-- You need to have Metamask browser extension installed on your browser.
+* MetaMask browser extension installed
+* Node.js >= 18
+* NPM or Yarn
+* Basic familiarity with Ethereum smart contracts
 
-## Local Hardhat Network (to add in MetaMask)
+## Setup Local Hardhat Network
 
-Follow the step-by-step guide in the [Hardhat + MetaMask](https://docs.metamask.io/wallet/how-to/run-devnet/) documentation to set up your local devnet using Hardhat and MetaMask.
+1. Add a local Hardhat network to MetaMask:
 
-- Name: Hardhat
-- RPC URL: http://127.0.0.1:8545
-- Chain ID: 31337
-- Currency symbol: ETH
+   * Name: Hardhat
+   * RPC URL: [http://127.0.0.1:8545](http://127.0.0.1:8545)
+   * Chain ID: 31337
+   * Currency symbol: ETH
 
-## Install
-
-1. Clone this repository.
-2. From the repo root, run:
-
-```sh
-npm install
-```
-
-## Quickstart
-
-1. Setup your hardhat environment variables:
-
-Follow the detailed instructions in the [FHEVM documentation](https://docs.zama.ai/protocol/solidity-guides/getting-started/setup#set-up-the-hardhat-configuration-variables-optional) to setup `MNEMONIC` + `INFURA_API_KEY` Hardhat environment variables
-
-2. Start a local Hardhat node (new terminal):
+2. Start a local Hardhat node:
 
 ```sh
-# Default RPC: http://127.0.0.1:8545  | chainId: 31337
 npm run hardhat-node
 ```
 
@@ -54,81 +55,70 @@ npm run hardhat-node
 npm run dev:mock
 ```
 
-4. Start your browser with the Metamask extension installed and open http://localhost:3000
+4. Open [http://localhost:3000](http://localhost:3000) and connect MetaMask to the local network.
 
-5. Open the Metamask extension to connect to the local Hardhat node
-   i. Select Add network.
-   ii. Select Add a network manually.
-   iii. Enter your Hardhat Network RPC URL, http://127.0.0.1:8545 (or http://localhost:8545).
-   iv. Enter your Hardhat Network chain ID, 31337 (or 0x539 in hexadecimal format).
+## Deploy on Sepolia
 
-## Run on Sepolia
-
-1. Deploy your contract on Sepolia Testnet
+1. Deploy the contract on Sepolia Testnet:
 
 ```sh
 npm run deploy:sepolia
 ```
 
-2. In your browser open `http://localhost:3000`
+2. Open [http://localhost:3000](http://localhost:3000)
+3. Connect MetaMask to the Sepolia network.
 
-3. Open the Metamask extension to connect to the Sepolia network
+## Handling Common MetaMask Issues
 
-## How to fix Hardhat Node + Metamask Errors ?
+### Nonce Mismatch
 
-When using MetaMask as a wallet provider with a development node like Hardhat, you may encounter two common types of errors:
+* Clear MetaMask cache: Settings > Advanced > Clear Activity Tab.
 
-### 1. ⚠️ Nonce Mismatch ❌💥
+### View Function Result Mismatch
 
-MetaMask tracks wallet nonces (the number of transactions sent from a wallet). However, if you restart your Hardhat node, the nonce is reset on the dev node, but MetaMask does not update its internal nonce tracking. This discrepancy causes a nonce mismatch error.
+* Restart browser to refresh cached contract data.
 
-### 2. ⚠️ View Function Call Result Mismatch ❌💥
+## Project Structure
 
-MetaMask caches the results of view function calls. If you restart your Hardhat node, MetaMask may return outdated cached data corresponding to a previous instance of the node, leading to incorrect results.
+### Key Folders
 
-### ✅ How to Fix Nonce Mismatch:
+* `packages/site/fhevm`: Hooks and utilities to interact with FHEVM-enabled contracts.
+* `packages/site/hooks/metamask`: MetaMask hooks for wallet connection.
+* `packages/site/hooks/useVoteBallonDor.tsx`: Example hook demonstrating encrypted vote casting and decryption.
 
-To fix the nonce mismatch error, simply clear the MetaMask cache:
+### Frontend
 
-1. Open the MetaMask browser extension.
-2. Select the Hardhat network.
-3. Go to Settings > Advanced.
-4. Click the "Clear Activity Tab" red button to reset the nonce tracking.
+* Components under `packages/site/app` handle voting UI, fetching encrypted votes, user decryption, and visualizing results.
+* PieChart visualization provides real-time insight into the encrypted vote totals.
 
-The correct way to do this is also explained [here](https://docs.metamask.io/wallet/how-to/run-devnet/).
+## Running the App
 
-### ✅ How to Fix View Function Return Value Mismatch:
+1. Install dependencies:
 
-To fix the view function result mismatch:
+```sh
+npm install
+```
 
-1. Restart the entire browser. MetaMask stores its cache in the extension's memory, which cannot be cleared by simply clearing the browser cache or using MetaMask's built-in cache cleaning options.
+2. Start frontend (mock mode):
 
-By following these steps, you can ensure that MetaMask syncs correctly with your Hardhat node and avoid potential issues related to nonces and cached view function results.
+```sh
+npm run dev:mock
+```
 
-## Project Structure Overview
+3. Start frontend on Sepolia network:
 
-### Key Files/Folders
-
-- **`<root>/packages/site/fhevm`**: This folder contains the essential hooks needed to interact with FHEVM-enabled smart contracts. It is meant to be easily copied and integrated into any FHEVM + React project.
-
-- **`<root>/packages/site/hooks/useFHECounter.tsx`**: A simple React custom hook that demonstrates how to use the `useFhevm` hook in a basic use case, serving as an example of integration.
-
-### Secondary Files/Folders
-
-- **`<root>/packages/site/hooks/metamask`**: This folder includes hooks designed to manage the MetaMask Wallet provider. These hooks can be easily adapted or replaced to support other wallet providers, following the EIP-6963 standard,
-- Additionally, the project is designed to be flexible, allowing developers to easily replace `ethers.js` with a more React-friendly library of their choice, such as `Wagmi`.
+```sh
+npm run dev
+```
 
 ## Documentation
 
-- [Hardhat + MetaMask](https://docs.metamask.io/wallet/how-to/run-devnet/): Set up your local devnet step by step using Hardhat and MetaMask.
-- [FHEVM Documentation](https://docs.zama.ai/protocol/solidity-guides/)
-- [FHEVM Hardhat](https://docs.zama.ai/protocol/solidity-guides/development-guide/hardhat)
-- [@zama-fhe/relayer-sdk Documentation](https://docs.zama.ai/protocol/relayer-sdk-guides/)
-- [Setting up MNEMONIC and INFURA_API_KEY](https://docs.zama.ai/protocol/solidity-guides/getting-started/setup#set-up-the-hardhat-configuration-variables-optional)
-- [React Documentation](https://reactjs.org/)
-- [FHEVM Discord Community](https://discord.com/invite/zama)
-- [GitHub Issues](https://github.com/zama-ai/fhevm-react-template/issues)
+* [FHEVM Documentation](https://docs.zama.ai/protocol/solidity-guides/)
+* [FHEVM Hardhat Guide](https://docs.zama.ai/protocol/solidity-guides/development-guide/hardhat)
+* [@zama-fhe/relayer-sdk Documentation](https://docs.zama.ai/protocol/relayer-sdk-guides/)
+* [React Documentation](https://reactjs.org/)
+* [FHEVM Discord Community](https://discord.com/invite/zama)
 
 ## License
 
-This project is licensed under the BSD-3-Clause-Clear License - see the LICENSE file for details.
+This project is licensed under the BSD-3-Clause-Clear License.
